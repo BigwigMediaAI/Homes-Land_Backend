@@ -4,8 +4,9 @@ const cloudinary = require("./cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "blogs", // Optional folder name
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    folder: "properties",
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4"],
+    resource_type: "auto", // THIS IS THE KEY LINE
   },
 });
 

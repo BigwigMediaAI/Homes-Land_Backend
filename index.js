@@ -3,6 +3,7 @@ const cors = require("cors");
 const { connect } = require("./config/db");
 const leadRoutes = require("./routes/lead.route");
 const blogRoutes = require("./routes/blog.route");
+const buyproperty = require("./routes/propertyRoutes");
 
 require("dotenv").config();
 
@@ -13,6 +14,7 @@ app.use(cors());
 
 app.use("/api/lead", leadRoutes);
 app.use("/", blogRoutes);
+app.use("/buy", buyproperty);
 
 // Start server
 app.listen(process.env.PORT, async () => {
