@@ -19,4 +19,6 @@ router.get("/", propertyController.getProperties);
 // Get single property by slug
 router.get("/:slug", propertyController.getPropertyBySlug);
 
+router.delete("/:slug", propertyController.deleteProperty);
+
 module.exports = router;

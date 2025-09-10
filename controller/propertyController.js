@@ -99,3 +99,18 @@ exports.getPropertyBySlug = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch property", error });
   }
 };
+
+// controllers/propertyController.js
+exports.deleteProperty = async (req, res) => {
+  try {
+    const property = await Property.findOneAndDelete({ slug: req.params.slug });
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    res.status(200).json({ message: "Property deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete property", error });
+  }
+};
