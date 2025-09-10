@@ -8,8 +8,8 @@ router.post("/add", buyController.createBuyProperty);
 //Get all properties for sale
 router.get("/buy", buyController.getAllBuyProperties);
 
-//Get single property by ID
-router.get("/buy/:id", buyController.getBuyPropertyById);
+// Get single property by title slug
+router.get("/buy/title/:titleSlug", buyController.getBuyPropertyByTitle);
 
 //Delete property by ID
 router.delete("/buy/:id", buyController.deleteBuyProperty);

@@ -81,13 +81,20 @@ exports.getAllBuyProperties = async (req, res) => {
   }
 };
 
-// 📌 Get Single Buy Property by ID
-exports.getBuyPropertyById = async (req, res) => {
+// 📌 Get Single Buy Property by Title Slug
+exports.getBuyPropertyByTitle = async (req, res) => {
   try {
-    const property = await Buy.findById(req.params.id);
+    const { titleSlug } = req.params;
+    const title = titleSlug.replace(/-/g, " "); // convert slug to normal title
+
+    const property = await Buy.findOne({
+      title: new RegExp(`^${title}$`, "i"), // Case-insensitive exact match
+    });
+
     if (!property) {
       return res.status(404).json({ error: "Property not found" });
     }
+
     res.status(200).json(property);
   } catch (err) {
     console.error(err);
