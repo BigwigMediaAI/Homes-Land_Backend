@@ -1,117 +1,101 @@
-const Buy = require("../models/Buy.model");
-const cloudinary = require("../config/cloudinary");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const multer = require("multer");
+const Property = require("../models/Buy.model");
 
-// Configure Cloudinary Storage
-const cloudinaryStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "properties",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-});
+// @desc    Create a new property with images
+// @route   POST /api/properties
+// @access  Public or Admin
 
-const parser = multer({ storage: cloudinaryStorage });
-
-// Create a new Buy property
-exports.createBuyProperty = [
-  parser.fields([{ name: "images", maxCount: 50 }]),
-  async (req, res) => {
-    try {
-      const {
-        title,
-        type,
-        location,
-        price,
-        googleMapUrl,
-        highlights,
-        nearby,
-        features,
-        amenities,
-        description,
-      } = req.body;
-
-      if (!title || !type || !location || !price || !description) {
-        return res.status(400).json({ error: "Missing required fields." });
-      }
-
-      const images = Array.isArray(req.files["images"])
-        ? req.files["images"]
-        : [];
-
-      const imageUrls = images.map((file) => file.path);
-
-      const newProperty = new Buy({
-        title,
-        type,
-        location,
-        price,
-        images: imageUrls,
-        googleMapUrl,
-        highlights: highlights
-          ? highlights.split(",").map((i) => i.trim())
-          : [],
-        nearby: nearby ? nearby.split(",").map((i) => i.trim()) : [],
-        features: features ? features.split(",").map((i) => i.trim()) : [],
-        amenities: amenities ? amenities.split(",").map((i) => i.trim()) : [],
-        description,
-      });
-
-      await newProperty.save();
-      res.status(201).json({
-        message: "Property listed for sale successfully",
-        property: newProperty,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: err.message || "Server Error" });
-    }
-  },
-];
-
-// 📌 Get All Buy Properties
-exports.getAllBuyProperties = async (req, res) => {
+exports.createProperty = async (req, res) => {
   try {
-    const properties = await Buy.find().sort({ createdAt: -1 });
-    res.status(200).json(properties);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
+    const {
+      title,
+      description,
+      purpose,
+      type,
+      location,
+      price,
+      bedrooms,
+      bathrooms,
+      areaSqft,
+      highlights,
+      featuresAmenities,
+      nearby,
+      googleMapUrl,
+      videoLink,
+      extraHighlights,
+    } = req.body;
 
-// 📌 Get Single Buy Property by Title Slug
-exports.getBuyPropertyByTitle = async (req, res) => {
-  try {
-    const { titleSlug } = req.params;
-    const title = titleSlug.replace(/-/g, " "); // convert slug to normal title
+    // Handle uploaded images from Cloudinary
+    const images = req.files ? req.files.map((file) => file.path) : [];
 
-    const property = await Buy.findOne({
-      title: new RegExp(`^${title}$`, "i"), // Case-insensitive exact match
+    // Generate slug from title
+    const slug = title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+
+    // Convert numeric fields safely (empty string → null)
+    const toNumberOrNull = (value) => {
+      if (value === "" || value === undefined) return null;
+      const num = Number(value);
+      return isNaN(num) ? null : num;
+    };
+
+    const property = new Property({
+      title,
+      slug,
+      description: description || "", // if empty, fallback ""
+      purpose,
+      type,
+      location,
+      price: toNumberOrNull(price),
+      bedrooms: toNumberOrNull(bedrooms),
+      bathrooms: toNumberOrNull(bathrooms),
+      areaSqft: toNumberOrNull(areaSqft),
+
+      highlights: highlights ? JSON.parse(highlights) : [],
+      featuresAmenities: featuresAmenities ? JSON.parse(featuresAmenities) : [],
+      nearby: nearby ? JSON.parse(nearby) : [],
+      googleMapUrl: googleMapUrl || "",
+      videoLink: videoLink || "",
+      extraHighlights: extraHighlights ? JSON.parse(extraHighlights) : [],
+
+      images,
     });
 
-    if (!property) {
-      return res.status(404).json({ error: "Property not found" });
-    }
-
-    res.status(200).json(property);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server Error" });
+    await property.save();
+    res.status(201).json(property);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Failed to create property", error });
   }
 };
 
-// 📌 Delete Buy Property by ID
-exports.deleteBuyProperty = async (req, res) => {
+// @desc    Get all properties
+// @route   GET /api/properties
+// @access  Public
+exports.getProperties = async (req, res) => {
   try {
-    const property = await Buy.findByIdAndDelete(req.params.id);
+    const properties = await Property.find().sort({ createdAt: -1 });
+    res.status(200).json(properties);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch properties", error });
+  }
+};
+
+// @desc    Get single property by slug
+// @route   GET /api/properties/:slug
+// @access  Public
+exports.getPropertyBySlug = async (req, res) => {
+  try {
+    const property = await Property.findOne({ slug: req.params.slug });
     if (!property) {
-      return res.status(404).json({ error: "Property not found" });
+      return res.status(404).json({ message: "Property not found" });
     }
-    res.status(200).json({ message: "Property deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server Error" });
+    res.status(200).json(property);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch property", error });
   }
 };

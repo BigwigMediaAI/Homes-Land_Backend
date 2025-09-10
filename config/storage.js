@@ -5,7 +5,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "properties",
-    allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4"],
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
     resource_type: "auto", // THIS IS THE KEY LINE
   },
 });

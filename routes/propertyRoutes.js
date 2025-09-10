@@ -1,17 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const buyController = require("../controller/propertyController");
+const propertyController = require("../controller/propertyController");
+const multer = require("multer");
+const storage = require("../config/storage"); // Cloudinary storage
 
-//Add a new property for sale (with images/videos upload)
-router.post("/add", buyController.createBuyProperty);
+const upload = multer({ storage });
 
-//Get all properties for sale
-router.get("/buy", buyController.getAllBuyProperties);
+// Create a new property with multiple images
+router.post(
+  "/",
+  upload.array("images", 50), // 'images' is the field name in form-data, max 10 files
+  propertyController.createProperty
+);
 
-// Get single property by title slug
-router.get("/buy/title/:titleSlug", buyController.getBuyPropertyByTitle);
+// Get all properties
+router.get("/", propertyController.getProperties);
 
-//Delete property by ID
-router.delete("/buy/:id", buyController.deleteBuyProperty);
+// Get single property by slug
+router.get("/:slug", propertyController.getPropertyBySlug);
 
 module.exports = router;

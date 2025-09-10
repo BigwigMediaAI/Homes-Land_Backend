@@ -1,23 +1,30 @@
 const mongoose = require("mongoose");
 
-const buySchema = new mongoose.Schema({
+const propertySchema = new mongoose.Schema({
   title: { type: String, required: true },
-  type: { type: String, required: true },
+  slug: { type: String, unique: true }, // SEO-friendly URL
+  description: { type: String, default: "" }, // optional
+  purpose: { type: String, enum: ["buy", "rent", "upcoming"], required: true },
+  type: { type: String, required: true }, // villa, apartment, penthouse, etc.
   location: { type: String, required: true },
-  price: { type: Number, required: true },
 
-  images: { type: [String], default: [] }, // Array of Cloudinary image URLs
+  images: { type: [String], default: [] }, // URLs or Cloudinary links
 
-  googleMapUrl: { type: String },
-  highlights: { type: [String], default: [] }, // ["Sea View", "Private Pool"]
-  nearby: { type: [String], default: [] }, // ["Beach, Mall"]
-  features: { type: [String], default: [] }, // ["3 Bedrooms", "2 Bathrooms"]
-  amenities: { type: [String], default: [] }, // ["Swimming Pool", "Security"]
+  price: { type: Number, default: null }, // optional
+  bedrooms: { type: Number, default: null },
+  bathrooms: { type: Number, default: null },
+  areaSqft: { type: Number, default: null },
 
-  description: { type: String, required: true },
+  highlights: { type: [String], default: [] },
+  featuresAmenities: { type: [String], default: [] },
+  nearby: { type: [String], default: [] },
+
+  googleMapUrl: { type: String, default: "" },
+  videoLink: { type: String, default: "" },
+  extraHighlights: { type: [String], default: [] },
 
   createdAt: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Buy", buySchema);
+module.exports = mongoose.model("Property", propertySchema);
