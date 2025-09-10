@@ -5,10 +5,8 @@ const buySchema = new mongoose.Schema({
   type: { type: String, required: true },
   location: { type: String, required: true },
   price: { type: Number, required: true },
-  thumbnail: { type: String, required: true }, // Cloudinary URL
 
   images: { type: [String], default: [] }, // Array of Cloudinary image URLs
-  videos: { type: [String], default: [] }, // Array of Cloudinary video URLs
 
   googleMapUrl: { type: String },
   highlights: { type: [String], default: [] }, // ["Sea View", "Private Pool"]

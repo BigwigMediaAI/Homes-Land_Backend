@@ -8,7 +8,7 @@ const cloudinaryStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "properties",
-    allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4"],
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
 
@@ -16,10 +16,7 @@ const parser = multer({ storage: cloudinaryStorage });
 
 // Create a new Buy property
 exports.createBuyProperty = [
-  parser.fields([
-    { name: "images", maxCount: 5 },
-    { name: "videos", maxCount: 2 },
-  ]),
+  parser.fields([{ name: "images", maxCount: 50 }]),
   async (req, res) => {
     try {
       const {
@@ -27,7 +24,6 @@ exports.createBuyProperty = [
         type,
         location,
         price,
-        thumbnail,
         googleMapUrl,
         highlights,
         nearby,
@@ -36,35 +32,22 @@ exports.createBuyProperty = [
         description,
       } = req.body;
 
-      if (
-        !title ||
-        !type ||
-        !location ||
-        !price ||
-        !thumbnail ||
-        !description
-      ) {
+      if (!title || !type || !location || !price || !description) {
         return res.status(400).json({ error: "Missing required fields." });
       }
 
       const images = Array.isArray(req.files["images"])
         ? req.files["images"]
         : [];
-      const videos = Array.isArray(req.files["videos"])
-        ? req.files["videos"]
-        : [];
 
       const imageUrls = images.map((file) => file.path);
-      const videoUrls = videos.map((file) => file.path);
 
       const newProperty = new Buy({
         title,
         type,
         location,
         price,
-        thumbnail,
         images: imageUrls,
-        videos: videoUrls,
         googleMapUrl,
         highlights: highlights
           ? highlights.split(",").map((i) => i.trim())

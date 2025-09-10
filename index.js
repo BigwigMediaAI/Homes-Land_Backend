@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use("/api/lead", leadRoutes);
 app.use("/", blogRoutes);
-app.use("/buy", buyproperty);
+app.use("/Property", buyproperty);
 
 // Start server
 app.listen(process.env.PORT, async () => {
