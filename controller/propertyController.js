@@ -114,3 +114,86 @@ exports.deleteProperty = async (req, res) => {
     res.status(500).json({ message: "Failed to delete property", error });
   }
 };
+
+// @desc    Update a property by slug (partial update)
+// @route   PATCH /api/properties/:slug
+// @access  Admin
+exports.updateProperty = async (req, res) => {
+  try {
+    const existing = await Property.findOne({ slug: req.params.slug });
+    if (!existing) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    // Parse existingImages coming from frontend (these are the ones to keep)
+    let images = existing.images;
+    if (req.body.existingImages) {
+      images = JSON.parse(req.body.existingImages);
+    }
+
+    // Append new images if uploaded
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map((file) => file.path);
+      images = [...images, ...newImages];
+    }
+
+    // Generate slug if title updated
+    let slug = existing.slug;
+    if (req.body.title) {
+      slug = req.body.title
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+    }
+
+    const updatedFields = {
+      title: req.body.title ?? existing.title,
+      slug,
+      description: req.body.description ?? existing.description,
+      purpose: req.body.purpose ?? existing.purpose,
+      type: req.body.type ?? existing.type,
+      location: req.body.location ?? existing.location,
+      price:
+        req.body.price !== undefined ? Number(req.body.price) : existing.price,
+      bedrooms:
+        req.body.bedrooms !== undefined
+          ? Number(req.body.bedrooms)
+          : existing.bedrooms,
+      bathrooms:
+        req.body.bathrooms !== undefined
+          ? Number(req.body.bathrooms)
+          : existing.bathrooms,
+      areaSqft:
+        req.body.areaSqft !== undefined
+          ? Number(req.body.areaSqft)
+          : existing.areaSqft,
+      highlights: req.body.highlights
+        ? JSON.parse(req.body.highlights)
+        : existing.highlights,
+      featuresAmenities: req.body.featuresAmenities
+        ? JSON.parse(req.body.featuresAmenities)
+        : existing.featuresAmenities,
+      nearby: req.body.nearby ? JSON.parse(req.body.nearby) : existing.nearby,
+      googleMapUrl: req.body.googleMapUrl ?? existing.googleMapUrl,
+      videoLink: req.body.videoLink ?? existing.videoLink,
+      extraHighlights: req.body.extraHighlights
+        ? JSON.parse(req.body.extraHighlights)
+        : existing.extraHighlights,
+
+      images, // now updated properly
+      lastUpdated: Date.now(),
+    };
+
+    const property = await Property.findOneAndUpdate(
+      { slug: req.params.slug },
+      { $set: updatedFields },
+      { new: true }
+    );
+
+    res.status(200).json(property);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: "Failed to update property", error });
+  }
+};

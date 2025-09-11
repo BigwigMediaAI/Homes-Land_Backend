@@ -21,4 +21,10 @@ router.get("/:slug", propertyController.getPropertyBySlug);
 
 router.delete("/:slug", propertyController.deleteProperty);
 
+router.patch(
+  "/:slug",
+  upload.array("images", 50),
+  propertyController.updateProperty
+);
+
 module.exports = router;
