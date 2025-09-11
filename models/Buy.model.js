@@ -4,7 +4,7 @@ const propertySchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true }, // SEO-friendly URL
   description: { type: String, default: "" }, // optional
-  purpose: { type: String, enum: ["buy", "rent", "upcoming"], required: true },
+  purpose: { type: String, enum: ["Buy", "Rent", "Upcoming"], required: true },
   type: { type: String, required: true }, // villa, apartment, penthouse, etc.
   location: { type: String, required: true },
 
