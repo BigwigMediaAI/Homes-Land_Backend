@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/lead", leadRoutes);
-app.use("/", blogRoutes);
+app.use("/blog", blogRoutes);
 app.use("/property", buyproperty);
 
 // Start server
