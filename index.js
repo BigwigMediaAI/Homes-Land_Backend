@@ -5,6 +5,7 @@ const leadRoutes = require("./routes/lead.route");
 const blogRoutes = require("./routes/blog.route");
 const buyproperty = require("./routes/propertyRoutes");
 const sellproperty = require("./routes/Sell.route");
+const contactRoutes = require("./routes/contact.route");
 
 require("dotenv").config();
 
@@ -17,6 +18,7 @@ app.use("/api/lead", leadRoutes);
 app.use("/blog", blogRoutes);
 app.use("/property", buyproperty);
 app.use("/property", sellproperty);
+app.use("/api/contacts", contactRoutes);
 
 // Start server
 app.listen(process.env.PORT, async () => {
