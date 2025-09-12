@@ -1,8 +1,5 @@
 const Sell = require("../models/Sell.model");
 
-// @desc    Create a new sell listing with images
-// @route   POST /api/sells
-// @access  Public or Admin
 exports.createSell = async (req, res) => {
   try {
     const {
@@ -73,9 +70,6 @@ exports.createSell = async (req, res) => {
   }
 };
 
-// @desc    Get all sell listings
-// @route   GET /api/sells
-// @access  Public
 exports.getSells = async (req, res) => {
   try {
     const sells = await Sell.find().sort({ createdAt: -1 });
@@ -86,9 +80,6 @@ exports.getSells = async (req, res) => {
   }
 };
 
-// @desc    Get a single sell listing by slug
-// @route   GET /api/sells/:slug
-// @access  Public
 exports.getSellBySlug = async (req, res) => {
   try {
     const sell = await Sell.findOne({ slug: req.params.slug });
@@ -102,9 +93,6 @@ exports.getSellBySlug = async (req, res) => {
   }
 };
 
-// @desc    Delete a sell listing by slug
-// @route   DELETE /api/sells/:slug
-// @access  Admin
 exports.deleteSell = async (req, res) => {
   try {
     const sell = await Sell.findOneAndDelete({ slug: req.params.slug });
@@ -119,9 +107,6 @@ exports.deleteSell = async (req, res) => {
   }
 };
 
-// @desc    Update a sell listing by slug (partial update)
-// @route   PATCH /api/sells/:slug
-// @access  Admin
 exports.updateSell = async (req, res) => {
   try {
     const existing = await Sell.findOne({ slug: req.params.slug });

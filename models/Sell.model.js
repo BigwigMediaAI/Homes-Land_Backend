@@ -26,6 +26,7 @@ const sellSchema = new mongoose.Schema({
   googleMapUrl: { type: String, default: "" },
   videoLink: { type: String, default: "" },
   extraHighlights: { type: [String], default: [] },
+  approved: { type: Boolean, default: false },
 
   createdAt: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
