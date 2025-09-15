@@ -18,7 +18,7 @@ app.use(cors());
 app.use("/api/lead", leadRoutes);
 app.use("/blog", blogRoutes);
 app.use("/property", buyproperty);
-app.use("/property", sellproperty);
+app.use("/sellproperty", sellproperty);
 app.use("/api/contacts", contactRoutes);
 app.use("/sell", SellApproval);
 
