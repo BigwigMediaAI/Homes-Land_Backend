@@ -8,7 +8,7 @@ const sellSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true }, // SEO-friendly URL
   description: { type: String, default: "" },
-  purpose: { type: String, default: "Sell" },
+  purpose: { type: String, default: "Buy" },
   type: { type: String, required: true },
   location: { type: String, required: true },
 
